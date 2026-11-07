@@ -3,6 +3,10 @@ package com.ihor.expensetracker;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import com.ihor.expensetracker.databinding.ActivityMainBinding;
+import android.util.Log;
+import android.util.Log;
+import com.ihor.expensetracker.data.Expense;
+import com.ihor.expensetracker.data.ExpenseRepository;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -10,6 +14,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
