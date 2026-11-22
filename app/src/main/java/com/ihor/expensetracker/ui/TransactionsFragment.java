@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.ihor.expensetracker.databinding.FragmentTransactionsBinding;
 import com.ihor.expensetracker.viewmodel.ExpenseViewModel;
+import com.ihor.expensetracker.R;
 
 public class TransactionsFragment extends Fragment {
 
@@ -41,7 +42,12 @@ public class TransactionsFragment extends Fragment {
             adapter.submitList(expenses);
             binding.textEmpty.setVisibility(expenses.isEmpty() ? View.VISIBLE : View.GONE);
         });
-
+        binding.fabAdd.setOnClickListener(v ->
+                requireActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragmentContainer, new AddExpenseFragment())
+                        .addToBackStack(null)
+                        .commit());
     }
 
     @Override
