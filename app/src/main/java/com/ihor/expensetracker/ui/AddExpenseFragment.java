@@ -17,6 +17,8 @@ import com.ihor.expensetracker.databinding.FragmentAddExpenseBinding;
 import com.ihor.expensetracker.util.DateUtils;
 import com.ihor.expensetracker.util.MoneyUtils;
 import com.ihor.expensetracker.viewmodel.ExpenseViewModel;
+import com.ihor.expensetracker.data.Expense;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.text.DateFormat;
 
@@ -38,6 +40,18 @@ public class AddExpenseFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Bundle args = getArguments();
+        if (args != null && args.containsKey("id")) {
+            editing = new Expense();
+            editing.id = args.getInt("id");
+            editing.amount = args.getLong("amount");
+            editing.categoryId = args.getInt("categoryId");
+            editing.date = args.getLong("date");
+            editing.note = args.getString("note");
+
+            selectedCategoryId = editing.categoryId;
+            selectedDate = editing.date;
+        }
 
         viewModel = new ViewModelProvider(requireActivity()).get(ExpenseViewModel.class);
 
@@ -49,6 +63,32 @@ public class AddExpenseFragment extends Fragment {
         updateDateButton();
         binding.buttonDate.setOnClickListener(v -> showDatePicker());
         binding.buttonSave.setOnClickListener(v -> save());
+
+        if (editing != null) {
+            binding.textTitle.setText("Edit expense");
+            binding.buttonSave.setText("Save changes");
+            binding.editAmount.setText(MoneyUtils.format(editing.amount));
+            binding.editNote.setText(editing.note);
+            adapter.setSelectedId(editing.categoryId);
+            updateDateButton();
+
+            binding.buttonDelete.setVisibility(View.VISIBLE);
+            binding.buttonDelete.setOnClickListener(v -> confirmDelete());
+        }
+    }
+
+    private Expense editing; // null = adding a new expense, not null = editing
+
+    public static AddExpenseFragment newInstance(Expense e) {
+        Bundle b = new Bundle();
+        b.putInt("id", e.id);
+        b.putLong("amount", e.amount);
+        b.putInt("categoryId", e.categoryId);
+        b.putLong("date", e.date);
+        b.putString("note", e.note);
+        AddExpenseFragment f = new AddExpenseFragment();
+        f.setArguments(b);
+        return f;
     }
 
     private void showDatePicker() {
@@ -87,8 +127,18 @@ public class AddExpenseFragment extends Fragment {
         String note = binding.editNote.getText() == null
                 ? "" : binding.editNote.getText().toString().trim();
 
-        viewModel.addExpense(amount, selectedCategoryId, selectedDate,
-                note.isEmpty() ? null : note);
+        String finalNote = note.isEmpty() ? null : note;
+        if (editing == null) {
+            viewModel.addExpense(amount, selectedCategoryId, selectedDate, finalNote);
+        } else {
+            Expense updated = new Expense();
+            updated.id = editing.id; // same id = "change this row", not "add a new one"
+            updated.amount = amount;
+            updated.categoryId = selectedCategoryId;
+            updated.date = selectedDate;
+            updated.note = finalNote;
+            viewModel.updateExpense(updated);
+        }
         getParentFragmentManager().popBackStack(); // go back to the list
     }
 
@@ -96,5 +146,17 @@ public class AddExpenseFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    private void confirmDelete() {
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Delete expense?")
+                .setMessage("This can't be undone.")
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("Delete", (dialog, which) -> {
+                    viewModel.deleteExpense(editing);
+                    getParentFragmentManager().popBackStack();
+                })
+                .show();
     }
 }

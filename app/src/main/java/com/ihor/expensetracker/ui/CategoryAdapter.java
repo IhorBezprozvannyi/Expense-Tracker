@@ -63,4 +63,9 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
             this.binding = binding;
         }
     }
+
+    public void setSelectedId(int id) {
+        selectedId = id;
+        notifyDataSetChanged();
+    }
 }

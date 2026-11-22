@@ -40,6 +40,12 @@ public class TransactionsFragment extends Fragment {
         viewModel.getAllCategories().observe(getViewLifecycleOwner(), adapter::setCategories);
         viewModel.getAllExpenses().observe(getViewLifecycleOwner(), expenses -> {
             adapter.submitList(expenses);
+            adapter.setOnExpenseClickListener(expense ->
+                    requireActivity().getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragmentContainer, AddExpenseFragment.newInstance(expense))
+                            .addToBackStack(null)
+                            .commit());
             binding.textEmpty.setVisibility(expenses.isEmpty() ? View.VISIBLE : View.GONE);
         });
         binding.fabAdd.setOnClickListener(v ->

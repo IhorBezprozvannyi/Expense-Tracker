@@ -72,6 +72,9 @@ public class ExpenseAdapter extends ListAdapter<Expense, ExpenseAdapter.ViewHold
 
         holder.binding.textAmount.setText("-€" + MoneyUtils.format(e.amount));
         holder.binding.textDate.setText(dateFormat.format(e.date));
+        holder.itemView.setOnClickListener(v -> {
+            if (clickListener != null) clickListener.onClick(e);
+        });
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
@@ -81,5 +84,15 @@ public class ExpenseAdapter extends ListAdapter<Expense, ExpenseAdapter.ViewHold
             super(binding.getRoot());
             this.binding = binding;
         }
+    }
+
+    public interface OnExpenseClick {
+        void onClick(Expense expense);
+    }
+
+    private OnExpenseClick clickListener;
+
+    public void setOnExpenseClickListener(OnExpenseClick listener) {
+        this.clickListener = listener;
     }
 }

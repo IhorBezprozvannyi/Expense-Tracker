@@ -11,6 +11,7 @@
         android:padding="16dp">
 
         <TextView
+            android:id="@+id/textTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Add expense"
@@ -75,5 +76,15 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="Save expense" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonDelete"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Delete expense"
+            android:textColor="#C62828"
+            android:visibility="gone" />
     </LinearLayout>
 </ScrollView>
